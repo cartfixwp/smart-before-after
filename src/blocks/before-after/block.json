@@ -1,0 +1,153 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "cartfix/smart-before-after",
+  "version": "1.0.0",
+  "title": "Smart Before After",
+  "category": "media",
+  "icon": "image-flip-horizontal",
+  "description": "A smart before/after image slider with behavior tracking and conversion triggers.",
+  "keywords": ["before", "after", "slider", "comparison", "image", "cartfix"],
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "textdomain": "smart-before-after",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "attributes": {
+    "beforeImage": {
+      "type": "object",
+      "default": null
+    },
+    "afterImage": {
+      "type": "object",
+      "default": null
+    },
+    "beforeLabel": {
+      "type": "string",
+      "default": "Before"
+    },
+    "afterLabel": {
+      "type": "string",
+      "default": "After"
+    },
+    "showLabels": {
+      "type": "boolean",
+      "default": true
+    },
+    "labelBackgroundColor": {
+      "type": "string",
+      "default": "rgba(0,0,0,0.8)"
+    },
+    "labelTextColor": {
+      "type": "string",
+      "default": "#ffffff"
+    },
+    "showCaption": {
+      "type": "boolean",
+      "default": false
+    },
+    "captionText": {
+      "type": "string",
+      "default": ""
+    },
+    "captionPosition": {
+      "type": "string",
+      "default": "below"
+    },
+    "captionAlignment": {
+      "type": "string",
+      "default": "center"
+    },
+    "startPosition": {
+      "type": "number",
+      "default": 50
+    },
+    "orientation": {
+      "type": "string",
+      "default": "horizontal"
+    },
+    "interactionMode": {
+      "type": "string",
+      "default": "drag"
+    },
+    "handleStyle": {
+      "type": "string",
+      "default": "arrows"
+    },
+    "handleColor": {
+      "type": "string",
+      "default": "#ffffff"
+    },
+    "borderRadius": {
+      "type": "number",
+      "default": 8
+    },
+    "enableFullscreen": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "animationType": {
+      "type": "string",
+      "default": "fade-up"
+    },
+    "animationDuration": {
+      "type": "number",
+      "default": 800
+    },
+    "animationDelay": {
+      "type": "number",
+      "default": 0
+    },
+    "enableTrigger": {
+      "type": "boolean",
+      "default": true
+    },
+    "triggerThreshold": {
+      "type": "number",
+      "default": 3
+    },
+    "showCTA": {
+      "type": "boolean",
+      "default": true
+    },
+    "ctaText": {
+      "type": "string",
+      "default": "Book Now"
+    },
+    "ctaLink": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaBackgroundColor": {
+      "type": "string",
+      "default": "#007bff"
+    },
+    "ctaTextColor": {
+      "type": "string",
+      "default": "#ffffff"
+    },
+    "blockId": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "example": {
+    "attributes": {
+      "beforeLabel": "Before",
+      "afterLabel": "After",
+      "startPosition": 50
+    }
+  }
+}

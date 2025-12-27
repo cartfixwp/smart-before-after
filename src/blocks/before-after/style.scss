@@ -1,0 +1,747 @@
+/**
+ * Frontend styles for Smart Before After block.
+ *
+ * @package SmartBeforeAfter
+ */
+
+.sba-container {
+	--sba-position: 50%;
+	--sba-handle-color: #ffffff;
+	--sba-border-radius: 8px;
+	--sba-label-bg: rgba(0, 0, 0, 0.8);
+	--sba-label-color: #ffffff;
+	--sba-cta-bg: #007bff;
+	--sba-cta-color: #ffffff;
+
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+.sba-slider {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--sba-border-radius);
+	cursor: ew-resize;
+	user-select: none;
+	-webkit-user-select: none;
+	touch-action: pan-y pinch-zoom;
+
+	// After image (base layer)
+	&__after {
+		position: relative;
+		display: block;
+
+		img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+	}
+
+	// Before image (overlay, clipped)
+	&__before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+
+		// Fallback for browsers without clip-path
+		width: var(--sba-position);
+
+		// Modern browsers with clip-path
+		@supports (clip-path: inset(0 0 0 0)) {
+			width: 100%;
+			clip-path: inset(0 calc(100% - var(--sba-position)) 0 0);
+		}
+
+		img {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+
+			// For fallback mode, prevent image from shrinking
+			@supports not (clip-path: inset(0 0 0 0)) {
+				width: auto;
+				min-width: 100%;
+				max-width: none;
+			}
+		}
+	}
+
+	// After label wrapper (no clip-path, JS handles visibility)
+	&__after-label-wrapper {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		pointer-events: none;
+		z-index: 5;
+	}
+
+	// Labels - CSS variables
+	&__label {
+		position: absolute;
+		padding: 8px 16px;
+		background: var(--sba-label-bg);
+		color: var(--sba-label-color);
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		border-radius: 4px;
+		pointer-events: none;
+		z-index: 5;
+		transition: opacity 0.15s ease;
+
+		// Enhanced background with backdrop-filter
+		@supports (backdrop-filter: blur(4px)) {
+			backdrop-filter: blur(4px);
+			-webkit-backdrop-filter: blur(4px);
+		}
+
+		&--before {
+			top: 16px;
+			left: 16px;
+		}
+
+		&--after {
+			top: 16px;
+			right: 16px;
+		}
+	}
+
+	// Divider line
+	&__divider {
+		position: absolute;
+		top: 0;
+		left: var(--sba-position);
+		width: 3px;
+		height: 100%;
+		background: var(--sba-handle-color);
+		transform: translateX(-50%);
+		pointer-events: none;
+		z-index: 8;
+		box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+	}
+
+	// Handle base styles
+	&__handle {
+		position: absolute;
+		top: 50%;
+		left: var(--sba-position);
+		transform: translate(-50%, -50%);
+		z-index: 10;
+		cursor: ew-resize;
+
+		// Arrows style (default)
+		&--arrows {
+			width: 48px;
+			height: 48px;
+			background: var(--sba-handle-color);
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-shadow:
+				0 2px 8px rgba(0, 0, 0, 0.2),
+				0 4px 16px rgba(0, 0, 0, 0.1);
+			transition: transform 0.2s, box-shadow 0.2s;
+
+			&:hover {
+				transform: translate(-50%, -50%) scale(1.1);
+				box-shadow:
+					0 4px 12px rgba(0, 0, 0, 0.25),
+					0 8px 24px rgba(0, 0, 0, 0.15);
+			}
+
+			.sba-slider__handle-arrows {
+				display: flex;
+				align-items: center;
+				gap: 4px;
+				color: #333;
+				font-size: 12px;
+			}
+		}
+
+		// Circle style
+		&--circle {
+			width: 40px;
+			height: 40px;
+			background: var(--sba-handle-color);
+			border-radius: 50%;
+			border: 3px solid rgba(0, 0, 0, 0.2);
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+			transition: transform 0.2s;
+
+			&:hover {
+				transform: translate(-50%, -50%) scale(1.15);
+			}
+
+			.sba-slider__handle-circle {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		// Line style
+		&--line {
+			width: 6px;
+			height: 60px;
+			background: var(--sba-handle-color);
+			border-radius: 3px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+			.sba-slider__handle-line {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+		}
+	}
+
+	// Active/dragging state
+	&.sba-slider--dragging {
+		cursor: grabbing;
+
+		.sba-slider__handle {
+			cursor: grabbing;
+		}
+	}
+
+	// Hover mode state
+	&.sba-slider--hovering {
+		cursor: crosshair;
+
+		.sba-slider__handle {
+			cursor: crosshair;
+		}
+	}
+
+	// ===========================================
+	// VERTICAL MODE
+	// ===========================================
+	&--vertical {
+		cursor: ns-resize;
+		touch-action: pan-x pinch-zoom;
+
+		// Before image - clip from bottom
+		.sba-slider__before {
+			// Fallback
+			width: 100%;
+			height: var(--sba-position);
+
+			@supports (clip-path: inset(0 0 0 0)) {
+				height: 100%;
+				clip-path: inset(0 0 calc(100% - var(--sba-position)) 0);
+			}
+
+			img {
+				@supports not (clip-path: inset(0 0 0 0)) {
+					height: auto;
+					min-height: 100%;
+					max-height: none;
+					width: 100%;
+				}
+			}
+		}
+
+		// Labels - reposition for vertical
+		.sba-slider__label {
+			&--before {
+				top: 16px;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+
+			&--after {
+				top: auto;
+				bottom: 16px;
+				right: auto;
+				left: 50%;
+				transform: translateX(-50%);
+			}
+		}
+
+		// Divider - horizontal line
+		.sba-slider__divider {
+			top: var(--sba-position);
+			left: 0;
+			width: 100%;
+			height: 3px;
+			transform: translateY(-50%);
+		}
+
+		// Handle - position at top
+		.sba-slider__handle {
+			top: var(--sba-position);
+			left: 50%;
+			cursor: ns-resize;
+
+			&--arrows {
+				&:hover {
+					transform: translate(-50%, -50%) scale(1.1);
+				}
+
+				.sba-slider__handle-arrows {
+					flex-direction: column;
+					gap: 2px;
+				}
+			}
+
+			&--circle {
+				&:hover {
+					transform: translate(-50%, -50%) scale(1.15);
+				}
+			}
+
+			// Line style - horizontal for vertical mode
+			&--line {
+				width: 60px;
+				height: 6px;
+			}
+		}
+
+		// Dragging state
+		&.sba-slider--dragging {
+			cursor: grabbing;
+
+			.sba-slider__handle {
+				cursor: grabbing;
+			}
+		}
+
+		// Hover mode state
+		&.sba-slider--hovering {
+			cursor: crosshair;
+
+			.sba-slider__handle {
+				cursor: crosshair;
+			}
+		}
+	}
+}
+
+// ===========================================
+// CAPTION
+// ===========================================
+.sba-caption {
+	margin: 12px 0 0;
+	padding: 0;
+	font-size: 14px;
+	line-height: 1.5;
+	color: #666;
+	max-width: 100%;
+	box-sizing: border-box;
+	overflow-wrap: break-word;
+	word-break: break-word;
+
+	// Alignment modifiers
+	&--left {
+		text-align: left;
+	}
+
+	&--center {
+		text-align: center;
+	}
+
+	&--right {
+		text-align: right;
+	}
+
+	// When above slider
+	.sba-container > &:first-child {
+		margin: 0 0 12px;
+	}
+}
+
+// ===========================================
+// FULLSCREEN BUTTON
+// ===========================================
+.sba-fullscreen-btn {
+	position: absolute;
+	bottom: 16px;
+	right: 16px;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: none;
+	border-radius: 8px;
+	background: rgba(0, 0, 0, 0.6);
+	color: #fff;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 15;
+	transition: background-color 0.2s, transform 0.2s;
+
+	@supports (backdrop-filter: blur(4px)) {
+		backdrop-filter: blur(4px);
+		-webkit-backdrop-filter: blur(4px);
+	}
+
+	&:hover {
+		background: rgba(0, 0, 0, 0.8);
+		transform: scale(1.1);
+	}
+
+	&:focus {
+		outline: 2px solid #fff;
+		outline-offset: 2px;
+	}
+
+	&:focus:not(:focus-visible) {
+		outline: none;
+	}
+
+	svg {
+		width: 20px;
+		height: 20px;
+	}
+}
+
+// Vertical mode - move button to different position
+.sba-slider--vertical .sba-fullscreen-btn {
+	bottom: auto;
+	top: 16px;
+	right: 16px;
+}
+
+// ===========================================
+// LIGHTBOX / FULLSCREEN OVERLAY
+// ===========================================
+.sba-lightbox {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 999999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+
+	&--open {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	// Backdrop
+	&__backdrop {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.9);
+		cursor: pointer;
+	}
+
+	// Content wrapper
+	&__content {
+		position: relative;
+		max-width: 90vw;
+		max-height: 90vh;
+		width: auto;
+		height: auto;
+		z-index: 1;
+		transform: scale(0.95);
+		transition: transform 0.3s ease;
+
+		.sba-lightbox--open & {
+			transform: scale(1);
+		}
+	}
+
+	// Slider in lightbox
+	&__slider {
+		max-width: 90vw;
+		max-height: 90vh;
+		border-radius: 8px;
+		overflow: hidden;
+
+		// After image sets the dimensions
+		.sba-slider__after {
+			img {
+				display: block;
+				max-width: 90vw;
+				max-height: 90vh;
+				width: auto;
+				height: auto;
+				object-fit: contain;
+			}
+		}
+
+		// Before image covers the same area
+		.sba-slider__before {
+			img {
+				display: block;
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+			}
+		}
+	}
+
+	// Close button
+	&__close {
+		position: absolute;
+		top: 20px;
+		right: 20px;
+		width: 48px;
+		height: 48px;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.1);
+		color: #fff;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10;
+		transition: background-color 0.2s, transform 0.2s;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.2);
+			transform: scale(1.1);
+		}
+
+		&:focus {
+			outline: 2px solid #fff;
+			outline-offset: 2px;
+		}
+
+		&:focus:not(:focus-visible) {
+			outline: none;
+		}
+
+		svg {
+			width: 24px;
+			height: 24px;
+		}
+	}
+}
+
+// ===========================================
+// CTA BUTTON
+// ===========================================
+.sba-cta {
+	text-align: center;
+	margin-top: 20px;
+	opacity: 0;
+	transform: translateY(10px);
+	transition: opacity 0.4s ease, transform 0.4s ease;
+
+	&.sba-cta--visible {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	&__button {
+		display: inline-block;
+		padding: 14px 32px;
+		background: var(--sba-cta-bg);
+		color: var(--sba-cta-color);
+		font-size: 16px;
+		font-weight: 600;
+		text-decoration: none;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: transform 0.2s, box-shadow 0.2s;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+			color: var(--sba-cta-color);
+			text-decoration: none;
+		}
+
+		&:active {
+			transform: translateY(0);
+		}
+
+		&:focus {
+			outline: 2px solid var(--sba-cta-bg);
+			outline-offset: 2px;
+		}
+
+		&:focus:not(:focus-visible) {
+			outline: none;
+		}
+	}
+}
+
+// Animation for CTA appearance
+@keyframes sba-cta-bounce {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(-5px);
+	}
+}
+
+.sba-cta--visible .sba-cta__button {
+	animation: sba-cta-bounce 0.5s ease 0.3s;
+}
+
+// ===========================================
+// RESPONSIVE
+// ===========================================
+@media (max-width: 600px) {
+	.sba-slider {
+		&__label {
+			padding: 6px 12px;
+			font-size: 11px;
+		}
+
+		&__handle--arrows {
+			width: 40px;
+			height: 40px;
+
+			.sba-slider__handle-arrows {
+				font-size: 10px;
+			}
+		}
+
+		&__handle--circle {
+			width: 32px;
+			height: 32px;
+		}
+	}
+
+	.sba-fullscreen-btn {
+		width: 36px;
+		height: 36px;
+		bottom: 12px;
+		right: 12px;
+
+		svg {
+			width: 18px;
+			height: 18px;
+		}
+	}
+
+	.sba-caption {
+		font-size: 13px;
+	}
+
+	.sba-cta__button {
+		padding: 12px 24px;
+		font-size: 14px;
+	}
+
+	.sba-lightbox__close {
+		top: 10px;
+		right: 10px;
+		width: 40px;
+		height: 40px;
+	}
+}
+
+// ===========================================
+// ACCESSIBILITY
+// ===========================================
+.sba-slider__handle:focus {
+	outline: 2px solid #007bff;
+	outline-offset: 2px;
+}
+
+.sba-slider__handle:focus:not(:focus-visible) {
+	outline: none;
+}
+
+// ===========================================
+// ALIGNMENT SUPPORT
+// ===========================================
+.alignwide .sba-container,
+.alignfull .sba-container {
+	max-width: none;
+}
+
+// ===========================================
+// SCROLL ANIMATIONS
+// ===========================================
+.sba-animate {
+	// Animation duration from CSS variable
+	--sba-animation-duration: 800ms;
+
+	// Initial state (hidden)
+	opacity: 0;
+	transition: opacity var(--sba-animation-duration) ease,
+				transform var(--sba-animation-duration) ease;
+
+	// Fade Up
+	&--fade-up {
+		transform: translateY(40px);
+	}
+
+	// Fade In (no transform, just opacity)
+	&--fade-in {
+		transform: none;
+	}
+
+	// Zoom In
+	&--zoom-in {
+		transform: scale(0.9);
+	}
+
+	// Slide Left (comes from right)
+	&--slide-left {
+		transform: translateX(60px);
+	}
+
+	// Slide Right (comes from left)
+	&--slide-right {
+		transform: translateX(-60px);
+	}
+
+	// Animated state (visible)
+	&.sba-animated {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+// Reduced motion - respect user preferences
+@media (prefers-reduced-motion: reduce) {
+	.sba-animate {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
+// ===========================================
+// PRINT STYLES
+// ===========================================
+@media print {
+	.sba-slider {
+		&__handle,
+		&__divider {
+			display: none;
+		}
+
+		&__before {
+			display: none;
+		}
+	}
+
+	.sba-cta,
+	.sba-fullscreen-btn,
+	.sba-lightbox {
+		display: none;
+	}
+}
